@@ -1,3 +1,5 @@
+use JSON;
+
 diag('Регионы:');
 
 set_response_processor( sub {
@@ -28,7 +30,5 @@ run_swat_module(
         },
     }
 );
-
-use JSON;
 
 #set_response('done');
