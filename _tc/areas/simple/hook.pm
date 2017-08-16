@@ -1,20 +1,4 @@
-use JSON;
-
 diag('Регионы:');
-
-set_response_processor( sub {
-
-  # processor function
-  my $headers   = shift;
-  my $body      = shift;
-  use JSON;
-  eval {
-   my $hash = decode_json($body);
-  };
-
-  return  $@ ?  $@  : "valid json";
-
-});
 
 run_swat_module(
     GET => '/areas',
@@ -28,4 +12,4 @@ run_swat_module(
     }
 );
 
-#set_response('done');
+set_response('done');
