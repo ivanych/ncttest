@@ -4,15 +4,12 @@ diag('Регионы:');
 
 set_response_processor( sub {
 
-  my $headers   = shift; # original response, http headers, String
-  my $body      = shift; # original response, body, String
-
   # processor function
   my $headers   = shift;
   my $body      = shift;
   use JSON;
   eval {
-   $hash = decode_json($body);
+   my $hash = decode_json($body);
   };
 
   return  $@ ?  $@  : "valid json";
