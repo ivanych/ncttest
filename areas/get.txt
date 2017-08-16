@@ -1,0 +1,1 @@
+generator: module_variable('check_sub')->();
