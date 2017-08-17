@@ -1,0 +1,86 @@
+/home/ivanych/.swat/.cache/26206/prove/_tc/areas/simple/META/request.t .......... 
+# @META
+# 	 Справочник регионов
+# 	 
+# 	 Проверки:
+# 	 - Вызов get /regions возвращает "200 OK"
+# 	 - В теле ответа возвращается валидный JSON
+# 	 - Страна с идентификатором 113 называется "Россия"
+# 	 - Регион России с идентификатором 2 называется "Санкт-Петербург"
+# GET /areas
+ok 1 - 200 / 1 of 2 curl -X GET -k --connect-timeout 20 -m 20 -L -D - 'https://api.hh.ru/areas'
+# Ответ содержит значение: cтрана.name = "Россия"
+# Ответ содержит значение: страна.areas.name = "Санкт-Петербург"
+ok 2 - text has '200 OK'
+ok 3 - text has 'valid json'
+ok 4 - text has 'страна[id=113].name=Россия'
+ok 5 - text has 'страна[id=113].areas[id=2].name=Санкт-Петербург'
+1..5
+ok
+/home/ivanych/.swat/.cache/26206/prove/_tc/employers/nct_ru/META/request.t ...... 
+# @META
+# 	 Поиск работодателя "Новые Облачные Технологии", в стране "Россия"
+# 	 
+# 	 Предзапросы:
+# 	 - Найти идентификатор страны "Россия" в справочнике регионов
+# 	 
+# 	 Проверки:
+# 	 - Вызов get /employers возвращает "200 OK"
+# 	 - В теле ответа возвращается валидный JSON
+# 	 - Поиск находит работодателя с названием "Новые Облачные Технологии", в стране Россия
+# GET /areas
+ok 1 - 200 / 1 of 2 curl -X GET -k --connect-timeout 20 -m 20 -L -D - 'https://api.hh.ru/areas'
+# Ответ содержит значение: страна.id = 113
+ok 2 - text has '200 OK'
+ok 3 - text has 'valid json'
+ok 4 - text match /страна\[name=Россия\].id=(\d+)/
+# GET /employers
+ok 5 - 200 / 1 of 2 curl -X GET -k --connect-timeout 20 -m 20  -G --data-urlencode 'text=Новые Облачные Технологии' --data-urlencode 'area=113'  -L -D - 'https://api.hh.ru/employers'
+# Ответ содержит значения: @val = [
+#     [0] "Новые Облачные Технологии"
+# ]
+ok 6 - text has '200 OK'
+ok 7 - text has 'valid json'
+ok 8 - text has 'items.name=Новые Облачные Технологии'
+1..8
+ok
+/home/ivanych/.swat/.cache/26206/prove/_tc/vacancies/qa_nct_spb/META/request.t .. 
+# @META
+# 	 Поиск вакансии "QA Automation Engineer", у работодателя "Новые Облачные технологии" в регионе "Санкт-Петербург"
+# 	 
+# 	 Предзапросы:
+# 	 - Найти идентификатор региона "Санкт-Петербург" и страны "Россия" в справочнике регионов
+# 	 - Найти идентификатор работодателя "Новые Облачные технологии" в стране "Россия"
+# 	 
+# 	 Проверки:
+# 	 - Вызов get /vacancies возвращает "200 OK"
+# 	 - В теле ответа возвращается валидный JSON
+# 	 - Поиск находит вакансию "QA Automation Engineer", у работодателя Новые Облачные технологии в Санкт-Петербурге
+# GET /areas
+ok 1 - 200 / 1 of 2 curl -X GET -k --connect-timeout 20 -m 20 -L -D - 'https://api.hh.ru/areas'
+# Ответ содержит значение: страна.areas.id = 2
+# Ответ содержит значение: страна.areas.parent_id = 113
+ok 2 - text has '200 OK'
+ok 3 - text has 'valid json'
+ok 4 - text match /страна\[name=Россия\].areas\[name=Санкт-Петербург\].id=(\d+)/
+ok 5 - text match /страна\[name=Россия\].areas\[name=Санкт-Петербург\].parent_id=(\d+)/
+# GET /employers
+ok 6 - 200 / 1 of 2 curl -X GET -k --connect-timeout 20 -m 20  -G --data-urlencode 'text=Новые Облачные Технологии' --data-urlencode 'area=113'  -L -D - 'https://api.hh.ru/employers'
+# Ответ содержит значения: items.id = 213397
+ok 7 - text has '200 OK'
+ok 8 - text has 'valid json'
+ok 9 - text match /items\.id=(\d+)/
+# GET /vacancies
+ok 10 - 200 / 1 of 2 curl -X GET -k --connect-timeout 20 -m 20  -G --data-urlencode 'text=QA Automation Engineer' --data-urlencode 'area=2' --data-urlencode 'employer_id=213397'  -L -D - 'https://api.hh.ru/vacancies'
+# Ответ содержит значения: @val = [
+#     [0] "Senior QA Automation Engineer",
+#     [1] "QA Automation Engineer (Server)"
+# ]
+ok 11 - text has '200 OK'
+ok 12 - text has 'valid json'
+ok 13 - text match /items\.name=.*?QA Automation Engineer/
+1..13
+ok
+All tests successful.
+Files=3, Tests=26,  2 wallclock secs ( 0.01 usr  0.00 sys +  0.60 cusr  0.05 csys =  0.66 CPU)
+Result: PASS
